@@ -1,0 +1,77 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ------------------------------------------------------------
+    // SETUP CODE: change CHANGE-THIS-CODE (in the one place below) to a
+    // secret word only you know, for example 'blue-lion-2026'.
+    // Keep the quotation marks. You type this code once in the app
+    // to become the owner. It stops working after that.
+    // ------------------------------------------------------------
+
+    function signedIn() { return request.auth != null; }
+    function isStaff() { return signedIn() && exists(/databases/$(database)/documents/staff/$(request.auth.uid)); }
+    function isOwner() { return isStaff() && get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role == 'owner'; }
+
+    // Approved staff list
+    match /staff/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isOwner());
+      allow create, update, delete: if isOwner();
+      // one-time setup: the first person with the setup code becomes the owner
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.role == 'owner'
+        && !exists(/databases/$(database)/documents/meta/owner)
+        && existsAfter(/databases/$(database)/documents/meta/owner)
+        && getAfter(/databases/$(database)/documents/meta/owner).data.uid == request.auth.uid;
+    }
+
+    match /meta/owner {
+      allow read: if isOwner();
+      allow create: if signedIn()
+        && !exists(/databases/$(database)/documents/meta/owner)
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.code == 'CHANGE-THIS-CODE';
+    }
+
+    // People asking for access
+    match /requests/{uid} {
+      allow create, update: if signedIn() && request.auth.uid == uid;
+      allow read, delete: if isOwner() || (signedIn() && request.auth.uid == uid);
+    }
+
+    // Clients: all staff can add and edit, only the owner can delete
+    match /clients/{id} {
+      allow read, create, update: if isStaff();
+      allow delete: if isOwner();
+    }
+
+    // Loans: officers can only create and edit PENDING applications
+    match /loans/{id} {
+      allow read: if isStaff();
+      allow create: if isOwner() || (isStaff() && request.resource.data.status == 'Pending');
+      allow update: if isOwner() || (isStaff() && resource.data.status == 'Pending' && request.resource.data.status == 'Pending');
+      allow delete: if isOwner();
+    }
+
+    // Repayments: all staff can record, only the owner can change or delete
+    match /payments/{id} {
+      allow read, create: if isStaff();
+      allow update, delete: if isOwner();
+    }
+
+    // Loan products and settings: everyone reads, only the owner changes
+    match /products/{id} {
+      allow read: if isStaff();
+      allow write: if isOwner();
+    }
+    match /settings/{id} {
+      allow read: if isStaff();
+      allow write: if isOwner();
+    }
+
+    // Loan and receipt numbering
+    match /counters/{id} {
+      allow read, write: if isStaff();
+    }
+  }
+}

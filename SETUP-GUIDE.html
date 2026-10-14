@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loan Manager: Cloud Setup Guide</title>
+<style>
+body{font:17px/1.55 system-ui,Segoe UI,Roboto,sans-serif;max-width:760px;margin:0 auto;padding:18px;color:#12241f;background:#f6faf8}
+h1{font-size:26px;margin:.2em 0}h2{background:#0b3d3a;color:#fff;padding:8px 12px;border-radius:8px;font-size:19px;margin-top:30px}
+ol{padding-left:22px}li{margin:10px 0}code,.f{background:#fff3c4;padding:1px 6px;border-radius:5px;font-family:Consolas,monospace;font-size:15px}
+.note{background:#e8f4ef;border-left:5px solid #18794e;padding:10px 14px;border-radius:6px;margin:14px 0}.warn{background:#fdecea;border-left:5px solid #c0392b;padding:10px 14px;border-radius:6px;margin:14px 0}
+</style></head><body>
+<h1>Loan Manager: put it online with a login</h1>
+<p>This guide has 3 parts. Part 1 and 2 are done once, on a computer. Part 3 is how you use it every day, on phones.</p>
+<div class="note"><b>What you need:</b> a computer with internet, a Google account (Gmail), and the 4 files in this folder: <span class="f">index.html</span>, <span class="f">firebase-config.js</span>, <span class="f">firestore.rules</span> and this guide. Screens on the Firebase website change sometimes, so a button may look a little different. Look for the same words.</div>
+
+<h2>Part 1: Set up Firebase (free)</h2>
+<ol>
+<li><b>Open Firebase.</b> Go to <b>console.firebase.google.com</b> and sign in with your Google account.</li>
+<li><b>Make a NEW project.</b> Click <b>Create a project</b> (or <b>Add project</b>). Name it <code>community-finance</code>. Click Continue. Turn <b>off</b> Google Analytics. Click <b>Create project</b>, wait, then click <b>Continue</b>.
+ <div class="warn">Always use a new project for this app. If you already have a Firebase project for another app, do not use it. The rules in step 5 would replace that app's rules and could break it.</div></li>
+<li><b>Turn on login.</b> On the left, click <b>Build</b>, then <b>Authentication</b>, then <b>Get started</b>. Click <b>Email/Password</b>. Switch the first switch <b>on</b>. Click <b>Save</b>.</li>
+<li><b>Make the database.</b> On the left, click <b>Build</b>, then <b>Firestore Database</b>, then <b>Create database</b>. If it asks for an edition, choose <b>Standard</b>. Choose the location nearest to you (you cannot change it later). Choose <b>Start in production mode</b>. Click <b>Create</b>.</li>
+<li><b>Paste the security rules.</b> This step protects your clients' data.
+ <ol type="a">
+ <li>On your computer, right-click <span class="f">firestore.rules</span>, choose <b>Open with</b>, then <b>Notepad</b>.</li>
+ <li>Find the text <code>CHANGE-THIS-CODE</code> (near the middle). Replace it with a secret word only you know, for example <code>blue-lion-2026</code>. Keep the quotation marks around it. Write this code down: you need it in step 9.</li>
+ <li>Click inside the Notepad text. Press <b>Ctrl + A</b> (selects everything), then <b>Ctrl + C</b> (copies).</li>
+ <li>In Firebase, on the Firestore Database page, click the <b>Rules</b> tab at the top. A box with some text appears.</li>
+ <li>Click inside that box. Press <b>Ctrl + A</b> then press <b>Delete</b> (the box is now empty). Press <b>Ctrl + V</b> (pastes your rules).</li>
+ <li>Click <b>Publish</b>. Wait for the message that the rules were published.</li>
+ </ol></li>
+<li><b>Connect the app.</b> Click the <b>gear</b> next to Project Overview, then <b>Project settings</b>. Scroll to <b>Your apps</b> and click the web symbol <b>&lt;/&gt;</b>. Type the nickname <code>loans</code>. Do <b>not</b> tick Firebase Hosting. Click <b>Register app</b>. A box appears with a block of text called <code>firebaseConfig</code>. Keep this page open.</li>
+<li><b>Fill in the settings file.</b> Open <span class="f">firebase-config.js</span> in Notepad. Delete the 6 lines that start with <code>apiKey</code>, <code>authDomain</code> and so on. In their place, paste the 6 lines from Firebase (the lines between <code>{</code> and <code>}</code>). The first line of the file must still say <code>export const firebaseConfig = {</code> and the last line must still be <code>};</code>. Save the file.</li>
+</ol>
+
+<h2>Part 2: Put the app online (free)</h2>
+<ol start="8">
+<li><b>Upload the folder.</b> Go to <b>app.netlify.com/drop</b> and sign up (free). Drag the whole <b>loan-cloud</b> folder onto the page. Wait. Netlify gives you a web address ending in <code>netlify.app</code>. Open it: you should see the login screen. (Do not double-click <span class="f">index.html</span> on your computer. It only works from the web address.)
+ <div class="note">Changed a file later? Drag the folder onto Netlify again. Your data is not lost, because it lives in Firebase.</div></li>
+<li><b>Become the owner (first time only).</b> On the login screen tap <b>Create an account</b> with your email and a password. You will see "waiting for the owner to approve". Under <b>First time setting up</b>, type your secret code from step 5 and tap <b>Become the owner</b>. You are in.</li>
+<li><b>Set up your loan products.</b> Go to <b>More</b>, tap <b>Add starter loan products</b>, then <b>Loan products and rates</b>, and change the rates to your own.</li>
+</ol>
+
+<h2>Part 3: Every day</h2>
+<ol start="11">
+<li><b>Add staff.</b> Give your staff the web address. They tap <b>Create an account</b> and wait. You open <b>More</b>, then <b>Staff and access</b>, and tap <b>Officer</b> beside their email. Officers can add clients, make loan applications and record repayments. Only you (the owner) can approve loans, change rates, write off or delete.</li>
+<li><b>Add the app to the phone's home screen.</b> In Chrome, tap the three dots, then <b>Add to Home screen</b>.</li>
+<li><b>Weak internet.</b> After you have logged in, the app keeps working when the signal drops. Entries are saved on the phone and sent when the internet returns. Log in once with internet first.</li>
+<li><b>Backup.</b> Each week, owner taps <b>More, Copy backup of all data</b> and pastes it into a note or WhatsApp to yourself.</li>
+</ol>
+
+<h2>Test it before real use</h2>
+<ol>
+<li>Create a second account (use another email), approve it as <b>Officer</b>, and log in with it on another phone.</li>
+<li>Open a Pending loan as the officer. You must see "Waiting for the owner to approve" and <b>no</b> Approve button.</li>
+<li>Open the web address in a private window without logging in. You must see only the login screen.</li>
+</ol>
+
+<h2>If something goes wrong</h2>
+<ul>
+<li><b>"Firebase is not connected yet":</b> the settings in <span class="f">firebase-config.js</span> were not saved or uploaded. Repeat steps 7 and 8.</li>
+<li><b>"You are not allowed to do that":</b> the rules were not published, or you are using an officer account for an owner job. Repeat step 5.</li>
+<li><b>"That setup code is wrong, or an owner already exists":</b> type the exact secret word you put in the rules (capitals and dashes matter). It works only once.</li>
+<li><b>Login says unauthorized domain:</b> in Firebase open <b>Authentication</b>, then <b>Settings</b>, then <b>Authorized domains</b>, and add your netlify.app address.</li>
+<li><b>"Quota exceeded":</b> the free Firebase plan has a daily limit. It suits a small lender. If you outgrow it, Firebase offers a pay-as-you-go plan.</li>
+</ul>
+
+<div class="warn"><b>Privacy:</b> you are keeping your clients' personal details online. Use strong passwords, approve only people you trust, and check what Uganda's data protection law requires of a lender. I am not a lawyer.</div>
+</body></html>

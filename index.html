@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Loan Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef3f1;--card:#fff;--ink:#12241f;--mut:#566a63;--line:#d3ded9;--acc:#e8b923;--accink:#2a2000;--head:#0b3d3a;--headink:#fff;--ok:#18794e;--bad:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1815;--card:#142520;--ink:#e6f0ec;--mut:#98b0a8;--line:#27403a;--head:#07251f;--ok:#4cc38a;--bad:#ff7a6b}}
+:root[data-theme="dark"]{--bg:#0c1815;--card:#142520;--ink:#e6f0ec;--mut:#98b0a8;--line:#27403a;--head:#07251f;--ok:#4cc38a;--bad:#ff7a6b}
+*{box-sizing:border-box}html{height:100%}
+body{height:100%;margin:0;display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,.num,.coin{font-family:"Nunito",system-ui,sans-serif}
+header{background:var(--head);color:var(--headink);padding:10px 14px;display:flex;align-items:center;gap:12px;border-bottom:4px solid var(--acc)}
+.coin{width:40px;height:40px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe27a,#d9a300);border:3px solid #fff3b0;color:#4a3600;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;flex:none}
+h1{margin:0;font-size:19px;line-height:1.15}header small{opacity:.8;font-size:12.5px}
+h2{margin:14px 0 8px;font-size:20px}h3{margin:12px 0 6px;font-size:15px;color:var(--mut)}
+main{flex:1;overflow:auto;padding:12px 14px}.hide{display:none!important}
+input,select,textarea{width:100%;padding:11px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);margin:0 0 10px}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+label{font-size:13px;color:var(--mut);display:block;margin:0 0 3px}
+.item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:7px;cursor:pointer}
+.nm{flex:1;min-width:0}.item b{display:block}.item small,small{color:var(--mut)}
+.pr{font-weight:700;white-space:nowrap}.low{color:var(--bad);font-weight:700}.ok{color:var(--ok);font-weight:700}
+nav{display:flex;background:var(--card);border-top:1px solid var(--line)}
+nav button{flex:1;padding:13px 2px;border:0;background:none;font-weight:700;font-size:14px;color:var(--mut);border-top:4px solid transparent;cursor:pointer}
+nav button.on{color:var(--ink);border-top-color:var(--acc)}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.stat{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat small{display:block}.stat .num{font-size:21px;font-weight:800}
+.stat.wide{grid-column:span 2;background:var(--head);color:var(--headink);border-color:var(--head)}.stat.wide small{color:#b9d8d0}
+.btn{display:block;width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);font-weight:700;margin-top:8px;cursor:pointer}
+.btn.big{background:var(--acc);color:var(--accink);border-color:var(--acc);font-size:17px}.btn.del{color:var(--bad)}
+.empty{color:var(--mut);text-align:center;padding:22px 12px}
+.tag{font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;border:1.5px solid var(--line);color:var(--mut)}
+.tag.due{color:var(--bad);border-color:var(--bad)}.tag.ok2{color:var(--ok);border-color:var(--ok)}.tag.warn{color:#8a5a00;border-color:var(--acc);background:rgba(232,185,35,.2)}
+#m{position:fixed;inset:0;background:rgba(5,15,12,.65);display:flex;align-items:flex-end;z-index:5}
+.sheet{background:var(--bg);width:100%;max-height:92%;overflow:auto;border-radius:16px 16px 0 0;padding:4px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.cb2{display:flex;gap:7px;margin-bottom:10px;overflow-x:auto}
+.chip{flex:none;padding:9px 14px;border-radius:99px;border:1.5px solid var(--line);background:var(--card);font-weight:700;cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--head);color:var(--headink);border-color:var(--head)}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line)}.kv span:last-child{text-align:right}
+table{width:100%;border-collapse:collapse;margin-bottom:8px}td,th{padding:7px 4px;border-bottom:1px solid var(--line);text-align:right;font-size:14px}td:first-child,th:first-child{text-align:left}
+pre{background:var(--card);border:1.5px dashed var(--line);border-radius:8px;padding:12px;white-space:pre-wrap;font:13.5px/1.45 ui-monospace,Menlo,Consolas,monospace;margin:0}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--head);color:var(--headink);padding:10px 16px;border-radius:99px;z-index:9;font-weight:600}
+a{color:inherit}
+#auth{position:fixed;inset:0;background:var(--bg);z-index:20;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+.box{max-width:380px;width:100%;text-align:center}.box input{text-align:left}.coin.big{width:76px;height:76px;font-size:28px;margin:0 auto 10px}
+.lnk{background:none;border:0;color:var(--mut);text-decoration:underline;margin-top:12px;cursor:pointer}.box p{margin:8px 0}
+</style>
+</head>
+<body>
+<header><span class="coin">Sh</span><div><h1 id="sn">Community Finance</h1><small>Loan manager</small></div></header>
+<main id="v"></main>
+<div id="auth"><div class="box"><div class="coin big">Sh</div><p>Loading...</p></div></div>
+<nav id="nav"></nav>
+<div id="m" class="hide" onclick="if(event.target===this&&!locked)cm()"><div class="sheet" id="sh"></div></div>
+<script>
+const K='finloans_v1',$=i=>document.getElementById(i),pad=(n,l=2)=>String(n).padStart(l,'0');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=n=>Math.round(n).toLocaleString('en-US'),money=n=>'UGX '+fmt(n),sum=(a,f)=>a.reduce((x,y)=>x+f(y),0);
+const ds=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),td=()=>ds(new Date()),dt=s=>new Date(s+'T12:00:00'),diff=(a,b)=>Math.round((dt(a)-dt(b))/864e5),fd=s=>dt(s).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+const addD=(s,n)=>{const d=dt(s);d.setDate(d.getDate()+n);return ds(d)},addM=(s,n)=>{const d=dt(s),g=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);d.setDate(Math.min(g,new Date(d.getFullYear(),d.getMonth()+1,0).getDate()));return ds(d)};
+let S={cfg:{name:'Community Finance'},c:[],l:[],y:[],pr:[]},tab='home',q='',fl='All',cf='Overdue',ym=td().slice(0,7),locked=0,user=null,role='',F=null,subs=[],staff=[],reqs=[],shadow={c:{},l:{},y:{},pr:{}};
+const nid=()=>Date.now()*100+Math.floor(Math.random()*100),own=()=>role==='owner',COLL={c:'clients',l:'loans',y:'payments',pr:'products'},wErr=e=>toast(errMsg(e));
+function save(){sync()}
+function sync(){if(!F||!user||!role)return;for(const k in COLL){const cur={};S[k].forEach(o=>cur[o.id]=JSON.stringify(o));for(const id in cur)if(shadow[k][id]!==cur[id]){shadow[k][id]=cur[id];F.setDoc(F.doc(F.db,COLL[k],String(id)),JSON.parse(cur[id])).catch(wErr)}for(const id in shadow[k])if(!(id in cur)){delete shadow[k][id];F.deleteDoc(F.doc(F.db,COLL[k],String(id))).catch(wErr)}}}
+function toast(m){const d=document.createElement('div');d.className='toast';d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
+function copy(t){const fb=()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');toast('Copied')}catch(e){toast('Copy failed')}a.remove()};try{navigator.clipboard.writeText(t).then(()=>toast('Copied'),fb)}catch(e){fb()}}
+const share=t=>navigator.share?navigator.share({text:t}).catch(()=>{}):copy(t),show=h=>{$('sh').innerHTML=h;$('m').classList.remove('hide')},cm=()=>$('m').classList.add('hide');
+const ask=(msg,fn)=>{show(`<h2>${msg}</h2><button class="btn big" id="yes">Yes</button><button class="btn" onclick="cm()">No</button>`);$('yes').onclick=()=>{cm();fn()}};
+const btn=(t,f,c='')=>`<button class="btn ${c}" onclick="${f}">${t}</button>`,kv=(a,b,c='')=>`<div class="kv"><span>${a}</span><span${c}>${b}</span></div>`;
+const fld=(l,id,v='',t='text',x='')=>`<label>${l}</label><input id="${id}" type="${t}" ${t==='number'?'inputmode="decimal" ':''}value="${esc(v)}" ${x}>`;
+const sel=(l,id,o,v,x='')=>`<label>${l}</label><select id="${id}" ${x}>${o.map(a=>{a=Array.isArray(a)?a:[a,a];return `<option value="${esc(a[0])}"${String(a[0])===String(v)?' selected':''}>${esc(a[1])}</option>`}).join('')}</select>`;
+const cn=id=>{const c=S.c.find(x=>x.id===id);return c?c.name:'(deleted client)'},LN=id=>S.l.find(x=>x.id===id);
+
+/* loan maths */
+const FR={'Daily':1,'Weekly':7,'Every 14 days':14,'Every 21 days':21,'Monthly':30},UD={Days:1,Weeks:7,Months:30},RD={Day:1,Week:7,Month:30},FRQ=Object.keys(FR),RUS=[['Month','per month'],['Week','per week'],['Day','per day'],['Loan','on the whole loan']],RUL={Month:'per month',Week:'per week',Day:'per day',Loan:'on the whole loan'};
+const nrm=L=>({...L,dur:L.dur??L.months,unit:L.unit||'Months',ru:L.ru||'Month'}),terms=L=>{L=nrm(L);return{r:L.rate+'% '+RUL[L.ru]+', '+(L.method==='Flat'?'flat':'reducing balance'),d:L.dur+' '+L.unit.toLowerCase()+', repaid '+L.freq.toLowerCase()}};
+function sched(L0){const L=nrm(L0),P=L.principal,days=L.dur*UD[L.unit],step=FR[L.freq]||30,mo=L.freq==='Monthly',n=Math.max(1,Math.round(mo&&L.unit==='Months'?L.dur:days/step)),whole=L.ru==='Loan',
+ I=whole?P*L.rate/100:P*L.rate/100*days/RD[L.ru],i=whole?L.rate/100/n:L.rate/100*step/RD[L.ru],flat=L.method==='Flat',pm=!flat&&i?P*i/(1-Math.pow(1+i,-n)):P/n,R=[];let b=P;
+ for(let k=1;k<=n;k++){let it,pr;if(flat){it=I/n;pr=P/n}else{it=b*i;pr=pm-it;b-=pr}R.push({d:mo?addM(L.disb,k):addD(L.disb,step*k),p:Math.round(pr),i:Math.round(it)})}
+ R[n-1].p+=P-sum(R,r=>r.p);if(flat)R[n-1].i+=Math.round(I)-sum(R,r=>r.i);return R}
+function info(L){const R=(L.sched||[]).map(r=>({...r})),pd=sum(S.y.filter(y=>y.lid===L.id),y=>y.amt),t=td();let rem=pd,tot=0,out=0,outP=0,over=0,days=0,nxt=null;
+ R.forEach(r=>{const due=r.p+r.i,c=Math.min(due,rem);rem-=c;r.paid=c;r.u=due-c;tot+=due;out+=r.u;outP+=r.p*r.u/due;if(r.u>.5){if(r.d<t){over+=r.u;if(!days)days=diff(t,r.d)}else if(!nxt)nxt=r}});
+ const closed=L.status==='Active'&&R.length&&out<=.5;return{R,pd,tot,out,outP,over,days,nxt,pen:(L.penPct||0)/100*over,stt:L.status==='Active'?(closed?'Closed':over>0?'Overdue':'Active'):L.status}}
+function flow(L){const R=(L.sched||[]).map(r=>({...r,left:r.p+r.i}));return S.y.filter(y=>y.lid===L.id).sort((a,b)=>a.t.localeCompare(b.t)).map(y=>{let a=y.amt,p=0,i=0;R.forEach(r=>{if(a>0&&r.left>0){const c=Math.min(a,r.left),f=c/(r.p+r.i);p+=r.p*f;i+=r.i*f;r.left-=c;a-=c}});return{t:y.t,p,i,x:a}})}
+function disburse(L,d){L.disb=d;L.fee=Math.round(L.principal*L.feePct/100);L.sched=sched(L);L.status='Active'}
+/* shell */
+$('nav').innerHTML=[['home','Home'],['loans','Loans'],['col','Collect'],['cl','Clients'],['more','More']].map(t=>`<button id="t-${t[0]}" onclick="go('${t[0]}')">${t[1]}</button>`).join('');
+function go(t){tab=t;q='';render()}
+function render(){if(!role)return;$('sn').textContent=S.cfg.name;document.title=S.cfg.name;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.id==='t-'+tab));({home:rHome,loans:rLoans,col:rCol,cl:rCl,more:rMore})[tab]()}
+const all=()=>S.l.map(l=>({l,i:info(l)})),live=x=>x.i.stt==='Active'||x.i.stt==='Overdue';
+function rHome(){const a=all().filter(live),op=sum(a,x=>x.i.outP),od=a.filter(x=>x.i.over>0),t=td(),col=f=>sum(S.y.filter(f),y=>y.amt),st=(s,v,c='')=>`<div class="stat"><small>${s}</small><span class="num ${c}">${v}</span></div>`;
+ $('v').innerHTML=`<div class="cards"><div class="stat wide"><small>Loan portfolio outstanding (principal)</small><span class="num">${money(op)}</span></div>`+st('Active loans',a.length)+st('Clients',S.c.length)+st('Collected today',money(col(y=>y.t===t)))+st('Collected this month',money(col(y=>y.t.slice(0,7)===t.slice(0,7))))+st('Overdue loans',od.length,od.length?'low':'')+st('Portfolio at risk',(op?Math.round(sum(od,x=>x.i.outP)/op*100):0)+'%')+st('Overdue amount',money(sum(od,x=>x.i.over)),od.length?'low':'')+st('Pending applications',S.l.filter(l=>l.status==='Pending').length)+'</div>'+btn('New loan application','nl(0)','big')+btn('See who must pay today','cf=\'Overdue\';go(\'col\')')}
+
+/* loans */
+function rLoans(){$('v').innerHTML=`<input type="search" placeholder="Search client or loan no." value="${esc(q)}" oninput="q=this.value;ll()"><div class="cb2">${['All','Pending','Active','Overdue','Closed'].map(c=>`<button class="chip${fl===c?' on':''}" onclick="fl='${c}';render()">${c}</button>`).join('')}</div><div id="ll"></div>${btn('New loan application','nl(0)','big')}`;ll()}
+const tg=s=>`<span class="tag ${s==='Overdue'||s==='Rejected'||s==='Written off'?'due':s==='Closed'?'ok2':s==='Pending'?'warn':''}">${s}</span>`;
+function ll(){if(tab==='cl')return lc();const l=all().filter(x=>(fl==='All'||x.i.stt===fl||(fl==='Active'&&x.i.stt==='Overdue'))&&(cn(x.l.cid)+x.l.no).toLowerCase().includes(q.toLowerCase())).reverse();
+ $('ll').innerHTML=l.map(x=>`<button class="item" onclick="ld(${x.l.id})"><span class="nm"><b>${esc(cn(x.l.cid))}</b><small>${x.l.no}, ${esc(x.l.prod)}, ${money(x.l.principal)}</small></span><span style="text-align:right"><span class="pr">${x.l.sched?money(x.i.out):''}</span><br>${tg(x.i.stt)}</span></button>`).join('')||'<div class="empty">No loans found.</div>'}
+function nl(cid){if(!S.c.length)return toast('Add a client first');const p=nrm(S.pr[0]||{name:'',rate:5,ru:'Month',method:'Flat',dur:6,unit:'Months',freq:'Monthly',fee:0,pen:0}),o='oninput="nlp()"';
+ show(`<h2>New loan</h2>${sel('Client','n1',S.c.map(c=>[c.id,c.name]),cid||S.c[0].id)}${sel('Loan product','n2',S.pr.map(x=>x.name),p.name,'onchange="npf()"')}${fld('Amount (UGX)','n3','','number',o)}${lf(p)}${fld('Processing fee %','n8',p.fee,'number',o)}${fld('Late penalty % on overdue amount','n9',p.pen,'number')}${fld('Purpose of loan','n10')}<div id="np"></div>${btn('Save application','snl(0)','big')}${btn('Approve and disburse now','snl(1)')}${btn('Cancel','cm()')}`)}
+const lf=p=>`${fld('Interest rate (%)','n4',p.rate,'number','oninput="nlp()"')}${sel('The interest rate is charged','n11',RUS,p.ru,'onchange="nlp()"')}${sel('Interest method','n5',[['Flat','Flat rate'],['Reducing','Reducing balance']],p.method,'onchange="nlp()"')}${fld('Loan duration','n6',p.dur,'number','oninput="nlp()"')}${sel('Duration in','n12',['Days','Weeks','Months'],p.unit,'onchange="nlp()"')}${sel('Client repays','n7',FRQ,p.freq,'onchange="nlp()"')}`;
+function npf(){const p=S.pr.find(x=>x.name===$('n2').value);if(!p)return;const n=nrm(p);[['n4','rate'],['n11','ru'],['n5','method'],['n6','dur'],['n12','unit'],['n7','freq'],['n8','fee'],['n9','pen']].forEach(a=>$(a[0]).value=n[a[1]]??p[a[1]]);nlp()}
+const rd=()=>({principal:+$('n3').value||0,rate:+$('n4').value||0,ru:$('n11').value,method:$('n5').value,dur:Math.max(1,+$('n6').value||1),unit:$('n12').value,freq:$('n7').value,disb:td()});
+function nlp(){const L=rd(),f=(+$('n8').value||0)*L.principal/100;if(!L.principal){$('np').innerHTML='<div class="sm">Enter the amount to see the repayment plan.</div>';return}const R=sched(L),I=sum(R,r=>r.i);$('np').innerHTML=kv('Installments',R.length+' of about '+money(R[0].p+R[0].i)+' ('+L.freq.toLowerCase()+')')+kv('Total interest',money(I)+' ('+(I/L.principal*100).toFixed(1)+'% of the loan)')+kv('Total to repay',money(L.principal+I))+kv('Last payment due',fd(R[R.length-1].d))+kv('Processing fee',money(f))+kv('Client receives',money(L.principal-f),' class="ok"')}
+function lcalc(){show(`<h2>Loan calculator</h2>${fld('Amount (UGX)','n3','','number','oninput="nlp()"')}${lf(nrm({rate:5,ru:'Month',method:'Flat',dur:3,unit:'Months',freq:'Weekly'}))}${fld('Processing fee %','n8',2,'number','oninput="nlp()"')}<div id="np"></div>${btn('Close','cm()')}`);nlp()}
+async function snl(go){const P=rd();if(!(P.principal>0))return toast('Enter the loan amount');if(go&&!own())return toast('Only the owner can approve loans');const L={...P,id:nid(),no:await nextNo('L','l'),cid:+$('n1').value,prod:$('n2').value,feePct:+$('n8').value||0,penPct:+$('n9').value||0,purpose:$('n10').value.trim(),app:td(),status:'Pending',by:user.email};delete L.disb;if(go)disburse(L,td());S.l.push(L);save();cm();tab='loans';fl='All';render();toast(go?'Loan disbursed':'Application saved')}
+function ld(id){const L=LN(id),i=info(L),c=S.c.find(x=>x.id===L.cid)||{},s=i.stt;
+ let h=`<h2>${esc(cn(L.cid))}</h2><small>${L.no}, ${esc(L.prod)}</small> ${tg(s)}`+(c.tel?kv('Phone',`<a href="tel:${esc(c.tel.replace(/\s/g,''))}">${esc(c.tel)}</a>`):'')+kv('Loan amount',money(L.principal))+kv('Interest',terms(L).r)+kv('Duration',terms(L).d)+kv('Processing fee',money(L.fee??L.principal*L.feePct/100))+kv(L.disb?'Disbursed':'Applied',fd(L.disb||L.app))+(L.purpose?kv('Purpose',esc(L.purpose)):'');
+ if(L.sched){h+=kv('Total to repay',money(i.tot))+kv('Paid so far',money(i.pd))+kv('Balance',money(i.out),' class="pr"')+(i.over>0?kv('Overdue ('+i.days+' days)',money(i.over),' class="low"')+kv('Penalty on overdue',money(i.pen),' class="low"'):'');
+  h+='<h3>Repayment schedule</h3><table><tr><th>Due</th><th>Amount</th><th>Paid</th><th></th></tr>'+i.R.map(r=>`<tr><td>${fd(r.d)}</td><td>${fmt(r.p+r.i)}</td><td>${fmt(r.paid)}</td><td>${r.u<=.5?'Paid':r.d<td()?'<span class="low">Late</span>':r.paid>0?'Part':'Due'}</td></tr>`).join('')+'</table><h3>Repayments</h3>'
+  +(S.y.filter(y=>y.lid===id).sort((a,b)=>b.t.localeCompare(a.t)).map(y=>`<button class="item" onclick="rcp(${y.id})"><span class="nm"><b>${fd(y.t)}</b><small>${y.no}, ${y.method}</small></span><span class="pr">${money(y.amt)}</span></button>`).join('')||'<div class="sm">None yet.</div>')}
+ if(s==='Pending')h+=own()?btn('Approve and disburse','ap('+id+')','big')+btn('Reject application','rj('+id+')','del'):'<div class="sm">Waiting for the owner to approve this loan.</div>';
+ if(s==='Active'||s==='Overdue')h+=btn('Record repayment','rp('+id+')','big')+btn('Copy reminder for client','copy(rem('+id+'))')+btn('Copy statement','copy(stm('+id+'))')+(own()?btn('Write off this loan','wo('+id+')','del'):'');
+ if(s==='Closed')h+=btn('Copy statement','copy(stm('+id+'))');
+ show(h+(own()?btn('Delete loan record','dl('+id+')','del'):'')+btn('Close','cm()'))}
+function ap(id){const L=LN(id);show(`<h2>Approve and disburse</h2>${kv('Client',esc(cn(L.cid)))}${kv('Loan amount',money(L.principal))}${kv('Client receives',money(L.principal-L.principal*L.feePct/100),' class="ok"')}${fld('Disbursement date','a1',td(),'date')}${btn('Disburse loan','ap2('+id+')','big')}${btn('Cancel','cm()')}`)}
+function ap2(id){disburse(LN(id),$('a1').value||td());save();cm();render();toast('Loan disbursed')}
+const rj=id=>ask('Reject this application?',()=>{LN(id).status='Rejected';save();cm();render()}),wo=id=>ask('Write off this loan? It leaves the active portfolio.',()=>{LN(id).status='Written off';save();render()}),dl=id=>ask('Delete this loan and all its repayments?',()=>{S.l=S.l.filter(l=>l.id!==id);S.y=S.y.filter(y=>y.lid!==id);save();render()});
+function rp(id){const L=LN(id),i=info(L);show(`<h2>Record repayment</h2><small>${esc(cn(L.cid))}, ${L.no}</small>${kv('Overdue now',money(i.over))}${kv('Next installment',i.nxt?money(i.nxt.u)+' on '+fd(i.nxt.d):'-')}${kv('Clears the loan',money(i.out+i.pen))}${fld('Amount received (UGX)','r1','','number')}${sel('Method','r2',['Cash','Mobile Money','Bank'])}${fld('Date','r3',td(),'date')}${btn('Save repayment','srp('+id+')','big')}${btn('Cancel','cm()')}`)}
+async function srp(id){const i=info(LN(id)),a=+$('r1').value;if(!(a>0))return toast('Enter the amount');if(a>i.out+i.pen+.5)return toast('That is more than the loan balance');const y={id:nid(),no:await nextNo('P','p'),lid:id,t:$('r3').value||td(),amt:a,method:$('r2').value,by:user.email};S.y.push(y);save();rcp(y.id);render()}
+function rtx(y){const L=LN(y.lid);return `${S.cfg.name.toUpperCase()}\nRepayment receipt ${y.no}\n${fd(y.t)}\n--------------------------\nClient: ${L?cn(L.cid):'?'}\nLoan: ${L?L.no:'?'}\nAMOUNT RECEIVED: ${money(y.amt)} (${y.method})\n`+(L?'Loan balance now: '+money(info(L).out)+'\n':'')+'Thank you.'}
+function rcp(yid){show(`<h2>Receipt</h2><pre>${esc(rtx(S.y.find(y=>y.id===yid)))}</pre>${btn('Share receipt',`share(rtx(S.y.find(y=>y.id===${yid})))`,'big')}${btn('Close','cm()')}`)}
+function rem(id){const L=LN(id),i=info(L),n=S.cfg.name;return i.over>0?`Dear ${cn(L.cid)}, your loan ${L.no} with ${n} has ${money(i.over)} overdue (${i.days} days late). Please pay as soon as possible to avoid more penalties. Thank you.`:`Dear ${cn(L.cid)}, your installment of ${money(i.nxt?i.nxt.u:0)} for loan ${L.no} is due on ${i.nxt?fd(i.nxt.d):'-'}. Thank you, ${n}.`}
+function stm(id){const L=LN(id),i=info(L);return `${S.cfg.name.toUpperCase()}\nLoan statement ${L.no}: ${cn(L.cid)}\nLoan ${money(L.principal)}, ${terms(L).r}, ${terms(L).d}\nTotal to repay: ${money(i.tot)}\n`+S.y.filter(y=>y.lid===id).sort((a,b)=>a.t.localeCompare(b.t)).map(y=>`${fd(y.t)}: ${money(y.amt)}`).join('\n')+`\nPaid: ${money(i.pd)}\nBalance: ${money(i.out)}`+(i.over>0?`\nOverdue: ${money(i.over)}`:'')}
+
+/* collect */
+function rCol(){const t=td(),a=all().filter(live).map(x=>({...x,k:x.i.over>0?'Overdue':x.i.nxt&&x.i.nxt.d===t?'Today':x.i.nxt&&diff(x.i.nxt.d,t)<=7?'Week':''})).filter(x=>x.k),n=k=>a.filter(x=>x.k===k).length,l=a.filter(x=>x.k===cf).sort((p,r)=>r.i.days-p.i.days);
+ $('v').innerHTML=`<div class="cb2">${[['Overdue','Overdue'],['Today','Due today'],['Week','Next 7 days']].map(c=>`<button class="chip${cf===c[0]?' on':''}" onclick="cf='${c[0]}';render()">${c[1]} (${n(c[0])})</button>`).join('')}</div>`+(l.map(x=>`<button class="item" onclick="ld(${x.l.id})"><span class="nm"><b>${esc(cn(x.l.cid))}</b><small>${x.l.no}, ${x.k==='Overdue'?x.i.days+' days late':'due '+fd(x.i.nxt.d)}</small></span><span class="pr ${x.k==='Overdue'?'low':''}">${money(x.k==='Overdue'?x.i.over:x.i.nxt.u)}</span></button>`).join('')||'<div class="empty">Nobody in this list. Well done.</div>')}
+
+/* clients */
+function rCl(){$('v').innerHTML=`<input type="search" placeholder="Search clients" value="${esc(q)}" oninput="q=this.value;ll()"><div id="ll"></div>${btn('Add client','ec(0)','big')}`;lc()}
+function lc(){const l=S.c.filter(c=>(c.name+c.tel).toLowerCase().includes(q.toLowerCase()));$('ll').innerHTML=l.map(c=>{const m=all().filter(x=>x.l.cid===c.id&&live(x));return `<button class="item" onclick="cp(${c.id})"><span class="nm"><b>${esc(c.name)}</b><small>${esc(c.tel||'No phone')}${c.biz?', '+esc(c.biz):''}</small></span><span class="pr">${m.length?money(sum(m,x=>x.i.out)):''}</span></button>`}).join('')||'<div class="empty">No clients yet.</div>'}
+function cp(id){const c=S.c.find(x=>x.id===id),m=all().filter(x=>x.l.cid===id);show(`<h2>${esc(c.name)}</h2>`+kv('Phone',c.tel?`<a href="tel:${esc(c.tel.replace(/\s/g,''))}">${esc(c.tel)}</a>`:'-')+kv('ID number',esc(c.nid||'-'))+kv('Address',esc(c.addr||'-'))+kv('Business',esc(c.biz||'-'))+kv('Guarantor',esc(c.gname||'-')+(c.gtel?', '+esc(c.gtel):''))+kv('Total borrowed',money(sum(m.filter(x=>x.l.sched),x=>x.l.principal)))+kv('Owes now',money(sum(m.filter(live),x=>x.i.out)))+'<h3>Loans</h3>'+(m.map(x=>`<button class="item" onclick="ld(${x.l.id})"><span class="nm"><b>${x.l.no}, ${esc(x.l.prod)}</b><small>${money(x.l.principal)}</small></span>${tg(x.i.stt)}</button>`).join('')||'<div class="sm">No loans yet.</div>')+btn('New loan for this client','nl('+id+')','big')+btn('Edit client','ec('+id+')')+btn('Close','cm()'))}
+function ec(id){const c=id?S.c.find(x=>x.id===id):{name:'',tel:'',nid:'',addr:'',biz:'',gname:'',gtel:''};show(`<h2>${id?'Edit client':'New client'}</h2>${fld('Full name','c1',c.name)}${fld('Phone','c2',c.tel,'tel')}${fld('National ID number','c3',c.nid)}${fld('Address / village','c4',c.addr)}${fld('Business or occupation','c5',c.biz)}${fld('Guarantor name','c6',c.gname)}${fld('Guarantor phone','c7',c.gtel,'tel')}${btn('Save client','sc('+id+')','big')}${id&&own()?btn('Delete client','dc('+id+')','del'):''}${btn('Cancel','cm()')}`)}
+function sc(id){const n=$('c1').value.trim();if(!n)return toast('Enter the name');const d={name:n,tel:$('c2').value.trim(),nid:$('c3').value.trim(),addr:$('c4').value.trim(),biz:$('c5').value.trim(),gname:$('c6').value.trim(),gtel:$('c7').value.trim()};id?Object.assign(S.c.find(x=>x.id===id),d):S.c.push({id:nid(),...d});save();cm();render()}
+function dc(id){if(S.l.some(l=>l.cid===id))return toast('This client has loans. Delete the loans first.');ask('Delete this client?',()=>{S.c=S.c.filter(c=>c.id!==id);save();render()})}
+
+/* more */
+function rMore(){const f=S.l.flatMap(flow).filter(x=>x.t.slice(0,7)===ym),dis=S.l.filter(l=>l.disb&&l.disb.slice(0,7)===ym),fe=sum(dis,l=>l.fee||0),ii=sum(f,x=>x.i),pp=sum(f,x=>x.p),xx=sum(f,x=>x.x);
+ $('v').innerHTML=`<h2>Monthly report</h2><input type="month" value="${ym}" onchange="ym=this.value||td().slice(0,7);render()">`+kv('Loans disbursed',dis.length+' ('+money(sum(dis,l=>l.principal))+')')+kv('Processing fees earned',money(fe))+kv('Interest collected',money(ii))+kv('Principal recovered',money(pp))+kv('Penalties and extras collected',money(xx))+kv('Total collected',money(sum(S.y.filter(y=>y.t.slice(0,7)===ym),y=>y.amt)))+kv('INCOME (fees + interest + penalties)',money(fe+ii+xx),' class="ok"')+btn('Copy this report','copy(rtxt())')
+ +'<h2>Tools</h2>'+btn('Loan calculator','lcalc()','big')+(own()?btn('Loan products and rates','mpr()')+(S.pr.length?'':btn('Add starter loan products','starter()'))+btn('Staff and access'+(reqs.length?' ('+reqs.length+' waiting)':''),'stf()')+btn('Institution name','cfg()')+btn('Copy backup of all data','copy(JSON.stringify({c:S.c,l:S.l,y:S.y,pr:S.pr}))'):'')
+ +'<h2>Account</h2>'+kv('Signed in as',esc(user.email))+kv('Access',own()?'Owner (full access)':'Loan officer')+btn('Sign out','doOut()','del')+'<div class="sm" style="margin-top:12px">Data is stored safely online and shared by all approved staff. Loan officers can add clients, make loan applications and record repayments. Only the owner can approve loans, change rates, write off or delete.</div>'}
+function rtxt(){const f=S.l.flatMap(flow).filter(x=>x.t.slice(0,7)===ym),dis=S.l.filter(l=>l.disb&&l.disb.slice(0,7)===ym),fe=sum(dis,l=>l.fee||0),ii=sum(f,x=>x.i),xx=sum(f,x=>x.x),a=all().filter(live);return `${S.cfg.name.toUpperCase()}\nReport for ${ym}\nLoans disbursed: ${dis.length} (${money(sum(dis,l=>l.principal))})\nFees: ${money(fe)}\nInterest collected: ${money(ii)}\nPrincipal recovered: ${money(sum(f,x=>x.p))}\nINCOME: ${money(fe+ii+xx)}\nPortfolio outstanding: ${money(sum(a,x=>x.i.outP))}\nOverdue loans: ${a.filter(x=>x.i.over>0).length}`}
+function mpr(){show('<h2>Loan products</h2><div class="sm">Rates below are samples. Edit them to match your institution.</div>'+S.pr.map(p=>`<button class="item" onclick="epr(${p.id})"><span class="nm"><b>${esc(p.name)}</b><small>${terms(p).r}, ${terms(p).d}</small></span></button>`).join('')+btn('Add loan product','epr(0)','big')+btn('Close','cm()'))}
+function epr(id){const p=nrm(id?S.pr.find(x=>x.id===id):{name:'',rate:5,ru:'Month',method:'Flat',dur:6,unit:'Months',freq:'Monthly',fee:2,pen:5});show(`<h2>${id?'Edit product':'New product'}</h2>${fld('Product name','p1',p.name)}${fld('Interest rate (%)','p2',p.rate,'number')}${sel('The interest rate is charged','p8',RUS,p.ru)}${sel('Interest method','p3',[['Flat','Flat rate'],['Reducing','Reducing balance']],p.method)}${fld('Usual loan duration','p4',p.dur,'number')}${sel('Duration in','p9',['Days','Weeks','Months'],p.unit)}${sel('Client repays','p5',FRQ,p.freq)}${fld('Processing fee %','p6',p.fee,'number')}${fld('Late penalty %','p7',p.pen,'number')}${btn('Save product','spr('+id+')','big')}${id?btn('Delete product','dpr('+id+')','del'):''}${btn('Cancel','mpr()')}`)}
+function spr(id){const n=$('p1').value.trim();if(!n)return toast('Enter the product name');const d={name:n,rate:+$('p2').value||0,ru:$('p8').value,method:$('p3').value,dur:Math.max(1,+$('p4').value||1),unit:$('p9').value,freq:$('p5').value,fee:+$('p6').value||0,pen:+$('p7').value||0};id?Object.assign(S.pr.find(x=>x.id===id),d):S.pr.push({id:nid(),...d});save();mpr()}
+const dpr=id=>ask('Delete this product? Existing loans keep their terms.',()=>{S.pr=S.pr.filter(p=>p.id!==id);save();mpr()});
+function starter(){[['Business loan',5,'Month','Reducing',6,'Months','Monthly',2,5],['Weekly group loan',4,'Month','Flat',12,'Weeks','Weekly',2,5],['Daily market loan',10,'Loan','Flat',30,'Days','Daily',2,5],['Farmer loan',3,'Month','Flat',6,'Months','Monthly',1,3]].forEach(a=>S.pr.push({id:nid(),name:a[0],rate:a[1],ru:a[2],method:a[3],dur:a[4],unit:a[5],freq:a[6],fee:a[7],pen:a[8]}));save();render();toast('Sample rates added. Edit them to your own.')}
+function cfg(){show(`<h2>Institution name</h2>${fld('Name shown on receipts and reports','s1',S.cfg.name)}${btn('Save','scf()','big')}${btn('Cancel','cm()')}`)}
+function scf(){const n=$('s1').value.trim();if(!n)return toast('Enter the name');S.cfg.name=n;F.setDoc(F.doc(F.db,'settings','main'),{name:n}).catch(wErr);cm();render()}
+function stf(){show('<h2>Staff and access</h2>'+(reqs.length?'<h3>Waiting for approval</h3>'+reqs.map(r=>`<div class="item"><span class="nm"><b>${esc(r.email)}</b></span><button class="chip" onclick="apS('${r.id}','officer')">Officer</button><button class="chip" onclick="apS('${r.id}','owner')">Owner</button></div>`).join(''):'<div class="sm">Nobody is waiting for approval.</div>')+'<h3>Approved staff</h3>'+staff.map(s=>`<div class="item"><span class="nm"><b>${esc(s.email||s.name||s.id)}</b><small>${s.role==='owner'?'Owner (full access)':'Loan officer'}</small></span>${s.id!==user.uid?`<button class="chip" onclick="rmS('${s.id}')">Remove</button>`:''}</div>`).join('')+'<div class="sm">New staff open the app link, tap Create an account, then wait. Their email appears above for you to approve.</div>'+btn('Close','cm()'))}
+function apS(uid,r){const q=reqs.find(x=>x.id===uid);if(!q)return;F.setDoc(F.doc(F.db,'staff',uid),{role:r,email:q.email,name:q.email,t:Date.now()}).then(()=>F.deleteDoc(F.doc(F.db,'requests',uid))).catch(wErr);setTimeout(stf,700)}
+const rmS=uid=>ask('Remove this person? They will lose access.',()=>{F.deleteDoc(F.doc(F.db,'staff',uid)).catch(wErr);setTimeout(stf,700)});
+
+/* login and cloud */
+const errMsg=e=>({'auth/invalid-credential':'Wrong email or password','auth/wrong-password':'Wrong email or password','auth/user-not-found':'Wrong email or password','auth/invalid-email':'That email does not look right','auth/email-already-in-use':'That email already has an account. Tap Sign in.','auth/weak-password':'The password must have at least 6 characters','auth/network-request-failed':'No internet connection','auth/too-many-requests':'Too many tries. Wait a few minutes.','permission-denied':'You are not allowed to do that'}[e&&e.code]||'Something went wrong. Try again.');
+function authUI(h){$('auth').innerHTML=`<div class="box"><div class="coin big">Sh</div><h1>${esc(S.cfg.name)}</h1><small>Loan manager</small>${h}</div>`;$('auth').classList.remove('hide')}
+function loginUI(msg='',em=''){authUI(`<input id="em" type="email" placeholder="Email" autocomplete="username" value="${esc(em)}"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><div class="low">${esc(msg)}</div>${btn('Sign in','doLogin()','big')}${btn('Create an account','doReg()')}<button class="lnk" onclick="doReset()">Forgot password?</button>`)}
+const cred=()=>[$('em').value.trim(),$('pw').value];
+function doLogin(){const [e,p]=cred();if(!e||!p)return toast('Enter your email and password');F.signInWithEmailAndPassword(F.auth,e,p).catch(x=>loginUI(errMsg(x),e))}
+function doReg(){const [e,p]=cred();if(!e||!p)return toast('Enter an email and choose a password');F.createUserWithEmailAndPassword(F.auth,e,p).catch(x=>loginUI(errMsg(x),e))}
+function doReset(){const e=$('em').value.trim();if(!e)return toast('Type your email first');F.sendPasswordResetEmail(F.auth,e).then(()=>loginUI('A reset link was sent to '+e,e)).catch(x=>loginUI(errMsg(x),e))}
+const doOut=()=>F.signOut(F.auth);
+function pendingUI(msg=''){authUI(`<p>Signed in as <b>${esc(user.email)}</b></p><p>Your account is waiting for the owner to approve it. The owner does this under <b>More, Staff and access</b>.</p>${btn('Check again','gate(user)')}<h3>First time setting up this system?</h3><small>Type the setup code you put in your firestore.rules file. This makes you the owner.</small><input id="oc" placeholder="Setup code" style="margin-top:8px"><div class="low">${esc(msg)}</div>${btn('Become the owner','claim()')}${btn('Sign out','doOut()','del')}`)}
+async function claim(){const c=$('oc').value.trim();if(!c)return toast('Type the setup code');try{const b=F.writeBatch(F.db);b.set(F.doc(F.db,'meta','owner'),{uid:user.uid,code:c,t:Date.now()});b.set(F.doc(F.db,'staff',user.uid),{role:'owner',name:user.email,email:user.email,t:Date.now()});await b.commit();F.deleteDoc(F.doc(F.db,'requests',user.uid)).catch(()=>{});gate(user)}catch(e){pendingUI('That setup code is wrong, or an owner already exists.')}}
+function stop(){subs.forEach(u=>u());subs=[];S.c=[];S.l=[];S.y=[];S.pr=[];shadow={c:{},l:{},y:{},pr:{}};staff=[];reqs=[];role=''}
+async function gate(u){stop();user=u;if(!u){loginUI();return}authUI('<p>Opening...</p>');try{const s=await F.getDoc(F.doc(F.db,'staff',u.uid));if(s.exists()){role=s.data().role||'officer';start()}else{F.setDoc(F.doc(F.db,'requests',u.uid),{email:u.email,t:Date.now()}).catch(()=>{});pendingUI()}}catch(e){authUI('<p class="low">'+esc(errMsg(e))+'</p>'+btn('Try again','gate(user)','big')+btn('Sign out','doOut()'))}}
+function start(){$('auth').classList.add('hide');[['c','clients'],['l','loans'],['y','payments'],['pr','products']].forEach(([k,n])=>subs.push(F.onSnapshot(F.collection(F.db,n),s=>{S[k]=s.docs.map(d=>d.data());shadow[k]={};S[k].forEach(o=>shadow[k][o.id]=JSON.stringify(o));render()},wErr)));
+ subs.push(F.onSnapshot(F.doc(F.db,'settings','main'),s=>{if(s.exists())S.cfg={...S.cfg,...s.data()};render()},wErr));
+ if(own()){subs.push(F.onSnapshot(F.collection(F.db,'staff'),s=>{staff=s.docs.map(d=>({id:d.id,...d.data()}))},wErr));subs.push(F.onSnapshot(F.collection(F.db,'requests'),s=>{reqs=s.docs.map(d=>({id:d.id,...d.data()}));if(tab==='more')render()},wErr))}render()}
+async function nextNo(p,k){try{const r=F.doc(F.db,'counters','main'),n=await Promise.race([F.runTransaction(F.db,async t=>{const s=await t.get(r),v=((s.exists()&&s.data()[k])||0)+1;t.set(r,{[k]:v},{merge:true});return v}),new Promise((_,j)=>setTimeout(j,4000))]);return p+pad(n,4)}catch(e){return p+Date.now().toString(36).toUpperCase().slice(-5)}}
+function boot(){F=window.FB;if(F.bad){authUI('<p>'+esc(F.bad)+'</p>');return}F.onAuthStateChanged(F.auth,gate)}
+if(window.FB)boot();else window.addEventListener('fb-ready',boot);
+setTimeout(()=>{if(!window.FB)authUI('<p>The app could not start. Check your internet connection and refresh the page. If it still fails, check that firebase-config.js is uploaded with the app.</p>')},9000);
+</script>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut,sendPasswordResetEmail} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,setDoc,deleteDoc,getDoc,onSnapshot,runTransaction,writeBatch} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {firebaseConfig} from "./firebase-config.js";
+if(!firebaseConfig||String(firebaseConfig.apiKey).startsWith("PASTE")){window.FB={bad:"Firebase is not connected yet. Open the file firebase-config.js, paste your Firebase settings into it, and upload the app again."}}
+else{const app=initializeApp(firebaseConfig);window.FB={auth:getAuth(app),db:initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})}),onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut,sendPasswordResetEmail,collection,doc,setDoc,deleteDoc,getDoc,onSnapshot,runTransaction,writeBatch}}
+window.dispatchEvent(new Event("fb-ready"));
+</script>
+</body>
+</html>
